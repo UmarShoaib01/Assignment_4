@@ -327,3 +327,35 @@ void release_v2(char* command){
     }
     return;
 }
+
+void status(){
+	printf("Available Resources: \n");
+	for (int j = 0; j < numOfResources; j++){
+		printf("%d ", available_resources[j]);
+	}
+
+	printf("\nMaximum Resources by Customer: ");
+	for (int i = 0; i < numOfCustomers; i++){
+        printf("\nClient %d\t", i);
+		for (int j = 0; j < numOfResources; j++){
+			printf("%d ", max_resources[i][j]);
+		}
+	}
+
+	printf("\nCurrently Allocated Resources by Customer: ");
+	for (int i = 0; i < numOfCustomers; i++){
+        printf("\nClient %d\t", i);
+		for (int j = 0; j < numOfResources; j++){
+			printf("%d ", allocated_resources[i][j]);
+		}
+	}
+
+	printf("\nCurrent Resources Needed by Customer: ");
+	for (int i = 0; i < numOfCustomers; i++){
+        printf("\nClient %d\t", i);
+		for (int j = 0; j < numOfResources; j++){
+			printf("%d ", required_resources[i][j]);
+		}
+	}
+	printf("\n");
+}
