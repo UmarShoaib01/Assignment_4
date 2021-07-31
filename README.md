@@ -28,6 +28,13 @@ Main function
 # Features
 Customer struct
 Number of clients and resources - available and allocated
+Safety Algorithm
+Function for each command line input (test cases)
+
+# Screenshots
+![image](https://user-images.githubusercontent.com/58055734/127752868-4c1e2374-d5bc-4902-830d-41197e34355a.png)
+
+
 
 
 
