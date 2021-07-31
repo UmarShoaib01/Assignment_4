@@ -459,3 +459,70 @@ void *runCustomer(void *t) { //Called from pthread
 	pthread_exit(0);
 	return 0;
 }
+
+void Run(Customer **c) { 
+	if (pthread_mutex_init(&mutex, NULL) != 0) {
+		printf("Failed mutex init \n");
+		return;
+	}
+
+	//Printing if state is safe or not
+	printf("\nCurrent State:");
+	switch(safetyAlgorithm()){
+		//Cases for safe algorithm, checks return value
+		case -1:
+			//Not safe
+			printf("Not safe\n");
+			printf("Currently not in safe state.\n");
+			break;
+		case 0:
+			//Safe
+			printf("Safe\n");
+			break;
+		default:
+			break;
+	}
+	//Print out safe sequences
+	printf("Safe Sequence is: < ");
+	for (int i = 0; i < numOfCustomers; i++) {
+		printf("%i ", res[i]);
+		(*c)[i].customerNum = res[i];
+		(*c)[i].customerOrder = i;
+	}
+	printf(">\n");
+
+	sequenceTemp = res;
+	//Printing all customers
+	for (int i = 0; i < numOfCustomers; i++) {
+		printf("----------------------------------------\n");
+		printf("--> Customer/Customer %i\n", sequenceTemp[i]);
+
+		//List number of resources the Customer currently needs
+		printf("\tNeeded: ");
+		for (int j = 0; j < numOfResources; j++) {
+			printf(" %i", required_resources[sequenceTemp[i]][j]);
+		}
+		printf("\n");
+
+		//Printing allocated resources
+		printf("\tAllocated resources:   ");
+		for (int j = 0; j < numOfResources; j++) {
+			printf(" %i", allocated_resources[sequenceTemp[i]][j]);
+		}
+		printf("\n");
+		
+		//Printing avaiable resources
+		printf("        Available:   ");
+		for (int j = 0; j < numOfResources; j++) {
+			printf(" %i", available_resources[j]);
+		}
+		printf("\n");
+
+		(*c)[i].customerReturn = pthread_create(&((*c)[i].customerThread), NULL, runCustomer, &((*c)[i]));
+
+		pthread_join((*c)[i].customerThread, NULL);
+	}
+
+	//Clean up mutex locks now that we're finished
+	pthread_mutex_destroy(&mutex);
+}
