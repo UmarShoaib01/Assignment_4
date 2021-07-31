@@ -256,3 +256,20 @@ void request_v1(char* command){
 		printf("Request valid and safe. Request Accepted. \n");
 	}
 }
+
+void request_v2(char* command){
+    char *token = strtok(command, " "); //Seperate RQ from informational sections of command
+    int cID = atoi(strtok(NULL, " ")); //Retrieve the ClientID
+    int resourceVal; //Initialize variable to hold resource value being modified
+    int j = 0;
+    token = strtok(NULL, " "); //Retrieve next resource value being requested
+    while (token != NULL){
+        resourceVal = atoi(token);
+        //Allocate the resource amount to the thread
+        allocated_resources[cID][j] = allocated_resources[cID][j] + resourceVal;
+        available_resources[j] = available_resources[j] - resourceVal;
+        required_resources[cID][j] = required_resources[cID][j] - resourceVal;
+        j++;
+        token = strtok(NULL, " ");
+    }
+}
