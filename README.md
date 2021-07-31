@@ -38,6 +38,16 @@ Function for each command line input (test cases)
 ![image](https://user-images.githubusercontent.com/58055734/127752954-0e5ebac0-f6db-4313-99b9-d07a4799fbb3.png)
 ![image](https://user-images.githubusercontent.com/58055734/127752971-a7d48924-baad-4ed1-9d0d-e146bcd1164f.png)
 
+# Use Examples
+Bankers Algorithm
+
+# About Developers
+Ali Zaidi - Computer Science Student - 3rd Year
+Umar Shoaib - Computer Science Student - 3rd Year
+
+# Licences
+
+
 
 
 
