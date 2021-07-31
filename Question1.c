@@ -309,3 +309,21 @@ void release_v1(char* command){
 		printf("Release request is valid. Release Accepted\n");
 	}
 }
+
+void release_v2(char* command){
+    char *token = strtok(command, " "); //Remove unnecessary parts of the request
+    int cID = atoi(strtok(NULL, " ")); //Retrieve the ClientID
+    int j = 0;
+    int resourceVal; //Initialize variable to hold resource value being modified
+
+    token = strtok(NULL, " "); //Get resource value to modify by
+    while (token != NULL){
+        resourceVal = atoi(token);
+        allocated_resources[cID][j] = allocated_resources[cID][j] - resourceVal; //Remove resources from amount allocated
+        required_resources[cID][j] = required_resources[cID][j] + resourceVal; //Resources must be added back to the needed counter
+        available_resources[j] = available_resources[j] + resourceVal; //Add the value back to globally available resources
+        j++;
+        token = strtok(NULL, " ");
+    }
+    return;
+}
