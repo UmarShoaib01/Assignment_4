@@ -1,5 +1,6 @@
 # Project Title
-  Assignment 4
+  CP386 Assignment 4 - Umar and Ali
+  Professor Sukhjit Sehra
   
 # Motivation
 Need a 12 in this course hopefully
