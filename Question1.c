@@ -198,3 +198,61 @@ int readFile(char* fileName){
 	
 	return 0;
 }
+
+
+void request_v1(char* command){
+	char* CommandBackup = (char*) malloc(50);
+	strcpy(CommandBackup, command); //Save copy of command for use in release if needed
+
+	char *token = strtok(command, " "); //Seperate RQ from informational sections of command
+	int cID = atoi(strtok(NULL, " ")); //Retrieve the ClientID
+	int resourceVal; //Initialize variable to hold resource value being modified
+	int valid = 0; //Verifies if request is able to be fulfilled (Does not include Safe State Check)
+
+	if (cID >= numOfCustomers){
+		printf("Error: Invalid Customer Number.\n");
+		return;
+	}
+
+    int j = 0;
+	token = strtok(NULL, " "); //Retrieve next resource value being requested
+	while (token != NULL){
+		resourceVal = atoi(token);
+        //Allocate the resource amount to the thread
+        allocated_resources[cID][j] = allocated_resources[cID][j] + resourceVal;
+		available_resources[j] = available_resources[j] - resourceVal;
+		required_resources[cID][j] = required_resources[cID][j] - resourceVal;
+        //Process whether allocated_resources is possible
+		if (required_resources[cID][j] < 0){ //Too many resources were requested, thread overcapacity. Will not be filled.
+			valid = -1;
+		}
+		if (available_resources[j] < 0){ //Not enough resources are available. Will not be filled.
+			valid = -2;
+			
+		}
+		j++;
+		token = strtok(NULL, " ");
+	}
+
+	switch (valid){
+		case -1:
+			printf("Error: Thread requested more resources than maximum allowed. Request denied\n");
+			break;
+		case -2:
+			printf("Error: Thread requested more resources than currently available. Request denied\n");
+			break;
+	}
+
+    if (valid != 0) {
+		release_v2(CommandBackup); //Release resources and return to previous state
+		return;
+	}
+
+	int safe = safetyAlgorithm(); //Checks if safe state is possible. 0 if able, -1 otherwise
+	if (safe == -1){
+		printf("Error: No safe state possible. Request denied.\n");
+		release_v2(CommandBackup); //Release resources back to previous safe state
+	}else{
+		printf("Request valid and safe. Request Accepted. \n");
+	}
+}
