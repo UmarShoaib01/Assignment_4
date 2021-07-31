@@ -526,3 +526,75 @@ void Run(Customer **c) {
 	//Clean up mutex locks now that we're finished
 	pthread_mutex_destroy(&mutex);
 }
+
+
+int safetyAlgorithm() {
+	//Basic Variables
+	int safe = 0; 
+	int bool_located = 1;
+	int numCols = numOfResources;
+	int numSeq = 0;
+	//Creation of arrays
+	res = (int *)malloc(numOfCustomers * sizeof(int));
+	amount_remaining = (int *)malloc(numOfResources * sizeof(int));
+	fin = (int *)malloc(numOfCustomers * sizeof(int));
+
+	//Set indexes
+	for (int i = 0; i < numOfCustomers; i++) {
+		res[i] = -1;
+		fin[i] = 0;
+	}
+
+	for (int i = 0; i < numOfResources; i++) {
+		amount_remaining[i] = available_resources[i];
+	}
+
+	while(bool_located && !safe){
+		//Check for location
+		bool_located = 0;
+		for (int i = 0; i < numOfCustomers;i++){
+			if(!fin[i]){
+				//Number of columns
+				numCols = 0;
+				//Index
+				int j = 0;
+				while(j<numOfResources){
+					//Break loop, not safe since required is less than 0 or amount remaining is less than 0 
+					if(required_resources[i][j] < 0 || amount_remaining[j] < 0){
+						safe = -1;
+						break;
+					}
+					//Break loop if required is greater than the amount remaining
+					if(required_resources[i][j] > amount_remaining[j]){
+						break;
+					}else{
+						//Increment number of columns
+						numCols++;
+					}
+					if(numCols == numOfResources){
+						//Set values
+						res[numSeq] = i;
+						numSeq += 1;
+						fin[i] = 1;
+						bool_located = 1;
+						//Add amount remaining with allocated resources
+						for (int g = 0; g < numOfResources; g++){
+							amount_remaining[g] += allocated_resources[i][g];
+						}
+					}
+					j++;
+				}
+			}
+		}
+	}
+
+
+	//Check Safe Variable depending on finished
+	for (int i = 0; i < numOfCustomers; i++) {
+		if (!fin[i]) {
+			safe = -1;
+		}
+	}
+
+	return safe;
+}
