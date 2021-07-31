@@ -98,3 +98,28 @@ int main(int argc, char **argv){
 
     return 0;
 }
+
+int check_input(char* input){
+	//Option for requestion resources
+    if (memcmp("RQ", input, 2) == 0){ 
+        request_v1(input);
+    }
+	//Option for releasing resources
+    else if (memcmp("RL", input, 2) == 0){ 
+        release_v1(input);
+    }
+	//Check status of resources
+    else if (memcmp("Status", input, 1) == 0){ 
+        status();
+    }
+	//Run threads
+    else if (memcmp("Run", input, 3) == 0){ 
+		Run(&c);
+        return 1;
+    }
+    else{
+        printf("Invalid Command was entered, Please enter an appropriate command...\n");
+    }
+    fflush(stdin); 
+    return 0;
+}
