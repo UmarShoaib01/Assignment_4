@@ -273,3 +273,39 @@ void request_v2(char* command){
         token = strtok(NULL, " ");
     }
 }
+
+
+void release_v1(char* command){
+	char* CommandBackup = (char*) malloc(50);
+	strcpy(CommandBackup, command); //Save copy of command for use in request if needed
+	char *token = strtok(command, " "); //Remove unnecessary parts of the request
+	int cID = atoi(strtok(NULL, " ")); //Retrieve the ClientID
+	int j = 0;
+	int error = 0;
+	int resourceVal; //Initialize variable to hold resource value being modified
+
+	if (cID >= numOfCustomers){
+		printf("Error: Invalid Customer Number.\n");
+		return;
+	}
+
+    token = strtok(NULL, " "); //Get resource value to modify by
+	while (token != NULL){
+		resourceVal = atoi(token);
+		allocated_resources[cID][j] = allocated_resources[cID][j] - resourceVal; //Remove resources from amount allocated
+		required_resources[cID][j] = required_resources[cID][j] + resourceVal; //Resources must be added back to the needed counter
+        available_resources[j] = available_resources[j] + resourceVal; //Add the value back to globally available resources
+
+		if (allocated_resources[cID][j] < 0){ //If request would attempt to release more resources than the Customer currently holds, deny it
+			error = 1;
+		}
+		j++;
+		token = strtok(NULL, " ");
+	}
+	if (error){
+		printf("Error: More resource being released than Customer has allocated. Release denied.\n");
+		request_v2(CommandBackup);
+	}else{
+		printf("Release request is valid. Release Accepted\n");
+	}
+}
