@@ -359,3 +359,103 @@ void status(){
 	}
 	printf("\n");
 }
+
+void *runCustomer(void *t) { //Called from pthread
+
+	//Mutex lock to determine critical section order
+	pthread_mutex_lock(&mutex);
+
+	//Crit Section...
+	char *InputArray = (char *)malloc(50);
+	int *intArray = (int *)malloc(50);
+	int number;
+
+	//Establish new need array
+	for (int i = 0; i < numOfResources; i++) {
+		int number = required_resources[((Customer *)t)->customerNum][i];
+		intArray[i] = number;
+	}
+
+	//Create a request string for the Customer
+	InputArray[0] = 'R';
+	InputArray[1] = 'Q';
+	InputArray[2] = ' ';
+	InputArray[3] = ((Customer *)t)->customerNum + '0';
+	InputArray[4] = ' ';
+
+	//Insert needed amount of resource into request string
+	int j = 0;
+	for (int i = 5; i < 12; i = i + 2) {
+		InputArray[i] = intArray[j] + '0';
+		InputArray[i + 1] = ' ';
+		j++;
+	}
+
+	printf("\tClient %i has started\n", ((Customer *)t)->customerNum);
+
+	//Request remaining resources
+	printf("\tRequest all needed resources\n        ");
+	request_v2(InputArray);
+
+	//Print out updated matrices
+	printf("New required Array:   ");
+	for (int j = 0; j < numOfResources; j++) {
+		printf(" %i", required_resources[((Customer*)t)->customerNum][j]);
+	}
+
+	printf("\n\tNew Allocation Array:   ");
+	for (int j = 0; j < numOfResources; j++) {
+		printf(" %i", allocated_resources[((Customer*)t)->customerNum][j]);
+	}
+
+	printf("\n\tNew Available Array:   ");
+	for (int j = 0; j < numOfResources; j++) {
+		printf("%i ", available_resources[j]);
+	}
+
+	//Verify state is safe
+	printf("\n\tState still safe: ");
+	int safe = safetyAlgorithm();
+	(safe == 0) ? printf("Yes\n") : printf("No\n");
+
+	printf("\tClient %i has finished\n", ((Customer *)t)->customerNum);
+	int *intArray2 = (int *)malloc(50);
+	for (int i = 0; i < numOfResources; i++) {
+		number = allocated_resources[((Customer *)t)->customerNum][i];
+		intArray2[i] = number;
+	}
+
+	//Initiate array to hold the release request
+	InputArray[0] = 'R';
+	InputArray[1] = 'L';
+	InputArray[2] = ' ';
+	InputArray[3] = ((Customer *)t)->customerNum + '0';
+	InputArray[4] = ' ';
+
+	j = 0;
+	for (int i = 5; i < 12; i += 2) {
+		InputArray[i] = intArray2[j] + '0';
+		InputArray[i + 1] = ' ';
+		j++;
+	}
+
+	//Release resources now that Customer is complete
+	printf("\tClient is releasing resources\n");
+	release_v2(InputArray);
+
+	//print out updated matrices
+	printf("\tNow available:");
+	for (int i = 0; i < numOfResources; i++) {
+		printf(" %i", available_resources[i]);
+	}
+	printf("\n");
+
+	//End the crit section 
+
+	//open  mutex lock for next Customer
+	pthread_mutex_unlock(&mutex);
+
+	//all fin, time to exit!
+	pthread_exit(0);
+	return 0;
+}
