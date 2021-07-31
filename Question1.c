@@ -123,3 +123,78 @@ int check_input(char* input){
     fflush(stdin); 
     return 0;
 }
+
+int readFile(char* fileName){ 
+
+	numOfCustomers = 0;
+	//Create file handle and fp for each character
+	FILE *file_handle = fopen(fileName, "r");
+	char fp;
+
+	//Check if file handle exists, if not return error
+	if(!file_handle){
+		printf("File does not exist...\n");
+		return -1;
+	}
+
+	//Count number of clients based on each whitespace at the end of each line
+	fp = fgetc(file_handle);
+	while (fp != EOF){
+        if (fp == '\n'){
+            numOfCustomers = numOfCustomers + 1; 
+        }
+		//Next Character
+        fp = fgetc(file_handle); 
+    }
+	numOfCustomers = numOfCustomers + 1;
+
+	//Set up informational matrices for use with Safety Algorithm
+	available_resources = (int *)malloc(numOfResources * sizeof(int*)); //Shows resources available
+	max_resources = (int **)malloc(numOfCustomers * sizeof(int *)); //Shows max required_resources resources 
+    allocated_resources = (int **)malloc(numOfCustomers * sizeof(int *)); //Shows how many resources are currently allocated
+    required_resources = (int **)malloc(numOfCustomers * sizeof(int *)); //Shows the remaining resources needed by each function
+
+    //Create second dimension
+	for (int i=0; i < numOfCustomers; i++){
+         max_resources[i] = (int *)malloc(numOfResources * sizeof(int));
+         allocated_resources[i] = (int *)malloc(numOfResources * sizeof(int));
+         required_resources[i] = (int *)malloc(numOfResources * sizeof(int));
+	}
+
+    //Set up known array values:
+	//Move given resource amounts into proper variable
+	for (int i=1; i <= (numOfResources); i++){
+		available_resources[i-1] = atoi(*(cmdArgs+i));
+	}
+    //allocated_resources array will begin at 0
+	for (int i = 0; i < numOfCustomers; i++){
+		for (int j = 0; j < numOfResources; j++){
+			allocated_resources[i][j] = 0;
+		}
+	}
+
+	fseek(file_handle, 0, SEEK_SET);
+
+	char *temp;
+    int i = 0, j = 0;
+	fp = fgetc(file_handle);
+    
+	while (fp != EOF){
+		if (fp != ',' && fp != '\n'){
+			temp = &fp;
+
+            //Max and need will begin at the same number (allocated_resources is at 0 across all Clients)
+			max_resources[i][j] = atoi(temp);
+			required_resources[i][j] = atoi(temp);
+			j++;
+
+			if (j == numOfResources){
+				j = 0;
+				i++;
+			}
+		}
+		fp = fgetc(file_handle);
+	}
+	
+	return 0;
+}
