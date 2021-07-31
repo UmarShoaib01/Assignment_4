@@ -51,3 +51,50 @@ int *res = NULL,
 *fin = NULL; 
 Customer* c = NULL; 
 pthread_mutex_t mutex; 
+
+int main(int argc, char **argv){
+
+    c = (Customer*) malloc(sizeof(Customer)*numOfCustomers); 
+    char *command = (char*) malloc(50);
+    if (argc < 2){
+        //Invalid number 
+        printf("No maximum resource amounts were given. (Invalid)\n");
+        return -1;
+    }
+
+    numOfResources = argc-1;
+    cmdArgs = argv;
+    //Call readFile function to read sample file with resources
+    readFile("sample4_in.txt");
+
+    //Print out base information, #clients, and available resources at the time 
+    printf("Number of Customers: %d\n", numOfCustomers);
+    printf("Currently Available Resources: ");
+    for (int i = 0; i < numOfResources; i++){
+        printf("%d ", available_resources[i]);
+    }
+    printf("\n");
+    printf("Maximum Resources from file: ");
+    printf("\n");
+    //Print max resources
+    int row = 4;
+    int column = 3;
+    for(int r=0;r<=row;r++){
+        for(int c = 0;c<=column;c++){
+            printf("%d ", max_resources[r][c]);
+        }
+        printf("\n");
+            
+    }
+     //Exit while loop
+    int whileLoop = 0; 
+    while (whileLoop == 0){
+        //Ask and get user input
+        printf("Enter Request: ");
+        fgets(command, 25, stdin);
+        //Check input, gather all relevant information 
+        whileLoop = check_input(command);
+    }
+
+    return 0;
+}
